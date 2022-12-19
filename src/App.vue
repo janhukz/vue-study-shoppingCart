@@ -1,28 +1,52 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <Header title="购物车" backgroundColor="" color=""></Header>
+    <div id="goods">
+      <Goods v-for="obj in list" :key="obj.id" :data="obj"></Goods>
+    </div>
+    <Footer @selAll="selAllFn" :arr="list"></Footer>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from './components/MyHeader.vue'
+import Goods from './components/MyGoods.vue'
+import Footer from './components/MyFooter.vue'
 
 export default {
-  name: 'App',
+  data() {
+    return {
+      list: []
+    }
+  },
   components: {
-    HelloWorld
+    Header,
+    Goods,
+    Footer
+  },
+  created() {
+    this.$axios({
+      url: '/api/cart'
+    })
+      .then((res) => {
+        console.log(res.data.list)
+        return (this.list = res.data.list)
+      })
+      .catch((e) => {
+        console.log(e.message)
+      })
+  },
+  methods: {
+    selAllFn(bool) {
+      // 逻辑：给goods_state赋值为bool
+      this.list.forEach(obj => obj.goods_state = bool)
+    }
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+#goods {
+  padding-top: 45px;
 }
 </style>
